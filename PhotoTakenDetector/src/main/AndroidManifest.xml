@@ -22,6 +22,8 @@
           android:enabled="true" >
         <intent-filter>
           <action android:name="android.hardware.action.NEW_PICTURE" />
+          <!-- Note: com.android.camera.NEW_PICTURE is a private API -->
+          <action android:name="com.android.camera.NEW_PICTURE" />
           <data android:mimeType="image/*" />
         </intent-filter>
       </receiver>

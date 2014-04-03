@@ -16,6 +16,6 @@ public class NewPictureReceiver extends BroadcastReceiver {
         String filePath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA));
         String mimeType = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.MIME_TYPE));
         cursor.close();
-        PhotoTakenLogger.logPhotoTaken("Broadcast Receiver", filePath, mimeType);
+        PhotoTakenLogger.logPhotoTaken("Broadcast Receiver (" + intent.getAction() + ")", filePath, mimeType);
     }
 }
