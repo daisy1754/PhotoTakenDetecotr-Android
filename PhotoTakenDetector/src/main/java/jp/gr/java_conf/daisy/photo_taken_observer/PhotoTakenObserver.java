@@ -9,10 +9,17 @@ import android.provider.MediaStore;
 
 public class PhotoTakenObserver extends ContentObserver {
     private final Context mContext;
+    private final Uri mObservedUri;
 
-    public PhotoTakenObserver(Context context) {
+    public PhotoTakenObserver(Context context, Uri observedUri) {
         super(null);
         mContext = context;
+        mObservedUri = observedUri;
+    }
+
+    @Override
+    public void onChange(boolean selfChange) {
+        onChange(selfChange, mObservedUri);
     }
 
     @Override

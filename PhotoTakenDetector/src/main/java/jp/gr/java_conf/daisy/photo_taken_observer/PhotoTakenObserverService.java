@@ -2,11 +2,13 @@ package jp.gr.java_conf.daisy.photo_taken_observer;
 
 import android.app.Service;
 import android.content.Intent;
+import android.database.ContentObserver;
+import android.net.Uri;
 import android.os.IBinder;
 import android.provider.MediaStore;
 
 public class PhotoTakenObserverService extends Service {
-    private PhotoTakenObserver photoTakenObserver;
+    private PhotoTakenObserver[] photoTakenObservers;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -16,26 +18,27 @@ public class PhotoTakenObserverService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        photoTakenObserver = new PhotoTakenObserver(this);
-        getApplicationContext()
-                .getContentResolver()
-                .registerContentObserver(
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                        false,
-                        photoTakenObserver);
-        getApplicationContext()
-                .getContentResolver()
-                .registerContentObserver(
-                        MediaStore.Images.Media.INTERNAL_CONTENT_URI,
-                        false,
-                        photoTakenObserver);
+        Uri[] observeUri = new Uri[] {
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, MediaStore.Images.Media.INTERNAL_CONTENT_URI
+        };
+        photoTakenObservers = new PhotoTakenObserver[observeUri.length];
+        for (int i = 0; i < observeUri.length; i++) {
+            photoTakenObservers[i] = new PhotoTakenObserver(this, observeUri[i]);
+            getApplicationContext()
+                    .getContentResolver()
+                    .registerContentObserver(
+                            observeUri[i],
+                            false,
+                            photoTakenObservers[i]);
+        }
         PhotoTakenLogger.debugLog("Service created / register observer");
     }
 
     @Override
     public void onDestroy() {
-        getApplicationContext().getContentResolver()
-                .unregisterContentObserver(photoTakenObserver);
+        for (ContentObserver observer: photoTakenObservers) {
+            getApplicationContext().getContentResolver().unregisterContentObserver(observer);
+        }
         PhotoTakenLogger.debugLog("Service destroy / Unregister observer");
         super.onDestroy();
     }
